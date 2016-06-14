@@ -19,6 +19,7 @@ var Engine = (function(global) {
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
      */
+    // console.log("in Engine");
     var doc = global.document,
         win = global.window,
         canvas = doc.createElement('canvas'),
@@ -39,6 +40,8 @@ var Engine = (function(global) {
          * would be the same for everyone (regardless of how fast their
          * computer is) - hurray time!
          */
+         // console.log("in Main");
+
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
@@ -64,6 +67,7 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
+        // console.log("in init");
         reset();
         lastTime = Date.now();
         main();
@@ -79,6 +83,7 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
+        // console.log("in update");
         updateEntities(dt);
         // checkCollisions();
     }
@@ -91,6 +96,7 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
+        // console.log("in updateEntities");
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
@@ -104,6 +110,7 @@ var Engine = (function(global) {
      * they are just drawing the entire screen over and over.
      */
     function render() {
+        // console.log("in render");
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
@@ -125,6 +132,7 @@ var Engine = (function(global) {
          */
         for (row = 0; row < numRows; row++) {
             for (col = 0; col < numCols; col++) {
+                // console.log("in the for loop of render, should draw background");
                 /* The drawImage function of the canvas' context element
                  * requires 3 parameters: the image to draw, the x coordinate
                  * to start drawing and the y coordinate to start drawing.
@@ -136,6 +144,9 @@ var Engine = (function(global) {
             }
         }
 
+
+        score.render();
+        lives.render();
         renderEntities();
     }
 
@@ -144,6 +155,7 @@ var Engine = (function(global) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
+        // console.log("in renderEntities");
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
@@ -151,7 +163,50 @@ var Engine = (function(global) {
             enemy.render();
         });
 
-        player.render();
+        if(player.char === '') {
+            // console.log("Player not chosen");
+            ctx.fillStyle = "red";
+            ctx.font = "bold 35px Arial";
+            ctx.textalign = "center";
+            ctx.fillText("CHOOSE YOUR CHARACTER!!", 0, 100);
+
+            ctx.strokeStyle = "black";
+            ctx.strokeText("CHOOSE YOUR CHARACTER!!", 0, 100);
+
+            //Have player choose character
+            var charImages = [
+                'images/char-boy.png',          //Draw in spot 1
+                'images/char-cat-girl.png',     //Draw in spot 2
+                'images/char-horn-girl.png',    //Draw in spot 3
+                'images/char-pink-girl.png',    //Draw in spot 4
+                'images/char-princess-girl.png' //Draw in spot 5
+            ];
+
+            //Draw selector Image first
+            // console.log("About to render selector");
+            selector.render();
+
+            //Draw characters
+            var numCols = 5;
+            for(col=0; col<numCols; col++) {
+                ctx.drawImage(Resources.get(charImages[col]), col*101, 400);
+            }
+        }
+        else if(lives.count === 0){
+                // console.log("writing game over");
+                ctx.fillStyle = "red";
+                ctx.font = "bold 35px Arial";
+                ctx.textalign = "center";
+                ctx.fillText("GAME OVER! Play Again? Y/N", 0, 100);
+
+                ctx.strokeStyle = "black";
+                ctx.strokeText("GAME OVER! Play Again? Y/N", 0, 100);
+        }
+        else
+        {
+            player.render();
+        }
+
     }
 
     /* This function does nothing but it could have been a good place to
@@ -159,7 +214,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        // console.log("in reset");
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -171,7 +226,13 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png',
+        'images/Selector.png',
+        'images/Heart.png'
     ]);
     Resources.onReady(init);
 
