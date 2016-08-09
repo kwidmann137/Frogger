@@ -1,6 +1,5 @@
 // Enemies our player must avoid
 var Enemy = function(x, y, speed) {
-    // console.log("in Enemy app.js");
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
     this.x = x;
@@ -11,16 +10,19 @@ var Enemy = function(x, y, speed) {
     this.sprite = 'images/enemy-bug.png';
 };
 
-var createEnemies = function(){
-    for(var row=1; row<4; row++){
-        for(var i=1; i<4; i++){
+//a function to create an array of enemy objects
+var createEnemies = function() {
+    //cycle through the rows
+    for (var row = 1; row < 4; row++) {
+        //create 3 enemies per row
+        for (var i = 1; i < 4; i++) {
             var x = -100;
-            var y = row*83-25;
-            var speed = Math.floor((Math.random() * 2) +1);
+            var y = row * 83 - 25;
+            var speed = Math.floor((Math.random() * 2) + 1);
             allEnemies.push(new Enemy(x, y, speed));
         }
     }
-}
+};
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -30,214 +32,226 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
 
-    var enemyRow = (this.y +25)/83;
+    //figure out which row the enemey is on, and how many are already on the screen
+    var enemyRow = (this.y + 25) / 83;
     var enemyRowCount = 0;
-    // console.log(enemyRow);
+
     //if enemy position is still on screen move enemy at speed
-    if(this.x>=-100 && this.x < 505){
+    if (this.x >= -100 && this.x < 505) {
         //move at speed
-        this.x = this.x+(this.speed*(dt*80));
+        this.x = this.x + (this.speed * (dt * 80));
     }
-    //If the enemy is not already on the screen, check to see if there as an enemy in the first two blocks
-    else
-    {
-        for(enemy in allEnemies){
-            if(((allEnemies[enemy].y+25)/83 === enemyRow) && allEnemies[enemy].x >-100 && allEnemies[enemy].x < 505){
+    //If the enemy is not already on the screen, check to see if there are already two enemies in that row on the screen
+    else {
+        for (var enemy in allEnemies) {
+            if (((allEnemies[enemy].y + 25) / 83 === enemyRow) && allEnemies[enemy].x > -100 && allEnemies[enemy].x < 505) {
                 enemyRowCount++;
             }
         }
-        if (enemyRowCount >= 2){
+        //if more already 2 enemies, set enemy at rest off screen
+        if (enemyRowCount >= 2) {
             this.x = -100;
             this.speed = 0;
-        }
-        else
-        {
+        }//otherwise, start moving enemy at new speed
+        else {
             this.x = -100;
-            this.speed = Math.floor((Math.random() * 3) +1);
+            this.speed = Math.floor((Math.random() * 3) + 1);
         }
     }
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    // console.log("in render app.js");
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-//Selector Icon class
+//Array of characters to draw
 var charImages = [
-    'images/char-boy.png',          //Draw in spot 1
-    'images/char-cat-girl.png',     //Draw in spot 2
-    'images/char-horn-girl.png',    //Draw in spot 3
-    'images/char-pink-girl.png',    //Draw in spot 4
+    'images/char-boy.png', //Draw in spot 1
+    'images/char-cat-girl.png', //Draw in spot 2
+    'images/char-horn-girl.png', //Draw in spot 3
+    'images/char-pink-girl.png', //Draw in spot 4
     'images/char-princess-girl.png' //Draw in spot 5
 ];
 
-var Selector = function(){
+//class for the selector image
+var Selector = function() {
     this.x = 202;
     this.y = 415;
     this.img = 'images/Selector.png';
-}
+};
 
+//Draw the selector image
 Selector.prototype.render = function() {
     ctx.drawImage(Resources.get(this.img), this.x, this.y);
-}
+};
 
-Selector.prototype.handleInput = function(key){
-    switch(key){
-        case "up" :
+//handle input for selector image
+Selector.prototype.handleInput = function(key) {
+    switch (key) {
+        case "up":
             break;
-        case "down" :
-            var charCol = this.x/101
+        case "down":
+            var charCol = this.x / 101;
             player.char = charImages[charCol];
             break;
-        case "left" :
-            if(this.x > 0){
-                this.x = this.x-101;
+        case "left":
+            if (this.x > 0) {
+                this.x = this.x - 101;
             }
             break;
-        case "right" :
-            if (this.x < 404){
+        case "right":
+            if (this.x < 404) {
                 this.x = this.x + 101;
             }
             break;
-        default :
+        default:
             break;
     }
-}
+};
 
 //Score class
-var Score = function(){
+var Score = function() {
     this.score = 0;
-}
+};
 
-Score.prototype.render = function(){
-    ctx.clearRect(0,0, 200,50)
+//draw the score on the screen, top left
+Score.prototype.render = function() {
+    ctx.clearRect(0, 0, 200, 50);
     ctx.fillStyle = "black";
     ctx.font = "30px Arial";
     ctx.textalign = "left";
     ctx.fillText("Score: " + score.score, 0, 45);
     ctx.strokeStyle = "black";
     ctx.strokeText("Score: " + score.score, 0, 45);
-}
+};
 
-Score.prototype.update = function(){
-    this.score = this.score+1;
-}
+//update the score
+Score.prototype.update = function() {
+    this.score = this.score + 1;
+};
 
 //Lives class
-var Lives = function(){
+var Lives = function() {
     this.count = 3;
     this.img = 'images/Heart.png';
-}
+};
 
-Lives.prototype.render = function(){
-    ctx.clearRect(350,0,505,50);
-    for(var i=0; i<this.count; i++){
-        ctx.drawImage(Resources.get(this.img), 350+(i*50), 0, 40, 50);
+//draw the lives on teh screen, represented as hearts
+Lives.prototype.render = function() {
+    ctx.clearRect(350, 0, 505, 50);
+    for (var i = 0; i < this.count; i++) {
+        ctx.drawImage(Resources.get(this.img), 350 + (i * 50), 0, 40, 50);
     }
-}
-Lives.prototype.update = function(count){
+};
+
+//update the amount of lives
+Lives.prototype.update = function(count) {
     this.count = this.count + count;
-}
+};
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-var Player = function(){
-    // console.log("in Player app.js");
-    this.x = (505/2)-(101/2);
+var Player = function() {
+    this.x = (505 / 2) - (101 / 2);
     this.y = 400;
-    this.char='';
+    this.char = '';
 };
 
-Player.prototype.update = function(){
-    // console.log("in PLayer.update app.js");
+//update the player position based on collision with enemy
+Player.prototype.update = function() {
     //Check if the player and enemy are occupying the same space, if so reset player to the start
     var enemyCol;
     var enemyRow;
-    var playerCol = this.x/101;
-    var playerRow = Math.floor((this.y+83)/83);
+    var playerCol = this.x / 101;
+    var playerRow = Math.floor((this.y + 83) / 83);
 
     // console.log("PLAYER: " + playerCol, playerRow);
     //if player and enemy occupy same space restart player and subtract life
-    for(enemy in allEnemies){
-        enemyCol =Math.floor((allEnemies[enemy].x+50)/101);
-        enemyRow = (allEnemies[enemy].y+25)/83;
-        // console.log("ENEMY: " +enemyCol, enemyRow);
-        if((enemyRow === playerRow)  && (enemyCol === playerCol)){
-            this.x = (505/2)-(101/2);
-            this.y = 400;
-            lives.update(-1);
+    for (var enemy in allEnemies) {
+        if (allEnemies[enemy].hasOwnProperty('x')) {
+            enemyCol = Math.floor((allEnemies[enemy].x + 50) / 101);
+            enemyRow = (allEnemies[enemy].y + 25) / 83;
+            // console.log("ENEMY: " +enemyCol, enemyRow);
+            if ((enemyRow === playerRow) && (enemyCol === playerCol)) {
+                this.x = (505 / 2) - (101 / 2);
+                this.y = 400;
+                lives.update(-1);
+            }
         }
     }
 
     //if player reached top row, reset to start and add to score
-    if(playerRow === 0){
+    if (playerRow === 0) {
         score.update();
-        this.x = (505/2)-(101/2);
+        this.x = (505 / 2) - (101 / 2);
         this.y = 400;
     }
 };
 
-Player.prototype.render = function(){
+//draw the player
+Player.prototype.render = function() {
     //Player image width is 101
-    //console.log("in Player.render app.js");
     ctx.drawImage(Resources.get(this.char), this.x, this.y);
 };
 
-Player.prototype.handleInput = function(key){
+//Handle input once a player is chosen
+Player.prototype.handleInput = function(key) {
     // console.log("in Player.handleInput app.js");
     // console.log(key);
-    switch(key){
-        case "up" :
-            var newY = this.y-83
-            if(this.y>0){
-                this.y=newY;
-            }
-            break;
-        case "down" :
-            var newY = this.y+83
-            if(this.y <400){
+    switch (key) {
+        case "up":
+            var newY = this.y - 83;
+            if (this.y > 0) {
                 this.y = newY;
             }
             break;
-        case "left" :
-            var newX = this.x-101
-            if(this.x > 0){
+        case "down":
+            newY = this.y + 83;
+            if (this.y < 400) {
+                this.y = newY;
+            }
+            break;
+        case "left":
+            var newX = this.x - 101;
+            if (this.x > 0) {
                 this.x = newX;
             }
             break;
-        case "right" :
-            var newX = this.x+101
-            if(this.x < 404){
+        case "right":
+            newX = this.x + 101;
+            if (this.x < 404) {
                 this.x = newX;
             }
             break;
-        default :
+        default:
             break;
     }
 
 };
 
-var Reset = function(){
+//reset class
+var Reset = function() {
 
-}
+};
 
-Reset.prototype.handleInput = function(key){
-    console.log("in rest handle Input");
-    switch(key){
-        case "n" :
+//asking player if they want to reset the game, handle input
+Reset.prototype.handleInput = function(key) {
+    switch (key) {
+        case "n":
+            player.char = 'GAMEOVER';
             break;
-        case "y" :
+        //reset the score, lives and player if player selects yes
+        case "y":
             score.score = 0;
             lives.count = 3;
             player.char = '';
             break;
-        default :
+        default:
             break;
     }
-}
+};
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -266,14 +280,18 @@ document.addEventListener('keyup', function(e) {
         89: 'y'
     };
 
-    if(lives.count >0){
-        if(player.char === ''){
+    //if the player has lives left, handle input
+    if (lives.count > 0 && score.score < 10) {
+        //if a player is chosen use input to move player
+        if (player.char === '') {
             selector.handleInput(allowedKeys[e.keyCode]);
         }
-        else{
+        //otherwise use input to select player
+        else {
             player.handleInput(allowedKeys[e.keyCode]);
         }
-    }else{
+    }// otherwise ask if they want another game
+    else {
         reset.handleInput(allowedKeys[e.keyCode]);
     }
 

@@ -13,7 +13,6 @@
  * the canvas' context (ctx) object globally available to make writing app.js
  * a little simpler to work with.
  */
-
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
@@ -40,7 +39,7 @@ var Engine = (function(global) {
          * would be the same for everyone (regardless of how fast their
          * computer is) - hurray time!
          */
-         // console.log("in Main");
+        // console.log("in Main");
 
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
@@ -115,12 +114,12 @@ var Engine = (function(global) {
          * for that particular row of the game level.
          */
         var rowImages = [
-                'images/water-block.png',   // Top row is water
-                'images/stone-block.png',   // Row 1 of 3 of stone
-                'images/stone-block.png',   // Row 2 of 3 of stone
-                'images/stone-block.png',   // Row 3 of 3 of stone
-                'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png'    // Row 2 of 2 of grass
+                'images/water-block.png', // Top row is water
+                'images/stone-block.png', // Row 1 of 3 of stone
+                'images/stone-block.png', // Row 2 of 3 of stone
+                'images/stone-block.png', // Row 3 of 3 of stone
+                'images/grass-block.png', // Row 1 of 2 of grass
+                'images/grass-block.png' // Row 2 of 2 of grass
             ],
             numRows = 6,
             numCols = 5,
@@ -163,22 +162,24 @@ var Engine = (function(global) {
             enemy.render();
         });
 
-        if(player.char === '') {
+        if (player.char === '') {
             // console.log("Player not chosen");
             ctx.fillStyle = "red";
             ctx.font = "bold 35px Arial";
             ctx.textalign = "center";
             ctx.fillText("CHOOSE YOUR CHARACTER!!", 0, 100);
+            ctx.fillText("Down arrow to select", 80, 410);
 
             ctx.strokeStyle = "black";
             ctx.strokeText("CHOOSE YOUR CHARACTER!!", 0, 100);
+            ctx.fillText("Down arrow to select", 80, 410);
 
             //Have player choose character
             var charImages = [
-                'images/char-boy.png',          //Draw in spot 1
-                'images/char-cat-girl.png',     //Draw in spot 2
-                'images/char-horn-girl.png',    //Draw in spot 3
-                'images/char-pink-girl.png',    //Draw in spot 4
+                'images/char-boy.png', //Draw in spot 1
+                'images/char-cat-girl.png', //Draw in spot 2
+                'images/char-horn-girl.png', //Draw in spot 3
+                'images/char-pink-girl.png', //Draw in spot 4
                 'images/char-princess-girl.png' //Draw in spot 5
             ];
 
@@ -188,12 +189,20 @@ var Engine = (function(global) {
 
             //Draw characters
             var numCols = 5;
-            for(col=0; col<numCols; col++) {
-                ctx.drawImage(Resources.get(charImages[col]), col*101, 400);
+            for (col = 0; col < numCols; col++) {
+                ctx.drawImage(Resources.get(charImages[col]), col * 101, 400);
             }
-        }
-        else if(lives.count === 0){
-                // console.log("writing game over");
+        } else if (lives.count <= 0) {
+            if(player.char === 'GAMEOVER'){
+                ctx.fillStyle = "red";
+                ctx.font = "bold 35px Arial";
+                ctx.textalign = "center";
+                ctx.fillText("GAME OVER! Nice Try.", 60, 100);
+
+                ctx.strokeStyle = "black";
+                ctx.strokeText("GAME OVER! Nice Try.", 60, 100);
+            }
+            else{
                 ctx.fillStyle = "red";
                 ctx.font = "bold 35px Arial";
                 ctx.textalign = "center";
@@ -201,9 +210,27 @@ var Engine = (function(global) {
 
                 ctx.strokeStyle = "black";
                 ctx.strokeText("GAME OVER! Play Again? Y/N", 0, 100);
-        }
-        else
-        {
+            }
+        } else if (score.score === 10) {
+            if(player.char === 'GAMEOVER'){
+                ctx.fillStyle = "red";
+                ctx.font = "bold 35px Arial";
+                ctx.textalign = "center";
+                ctx.fillText("GAME OVER! Way to go.", 60, 100);
+
+                ctx.strokeStyle = "black";
+                ctx.strokeText("GAME OVER! Way to go.", 60, 100);
+            }
+            else{
+                ctx.fillStyle = "red";
+                ctx.font = "bold 35px Arial";
+                ctx.textalign = "center";
+                ctx.fillText("YOU WON! Play Again? Y/N", 20, 100);
+
+                ctx.strokeStyle = "black";
+                ctx.strokeText("YOU WON! Play Again? Y/N", 20, 100);
+            }
+        }else {
             player.render();
         }
 
